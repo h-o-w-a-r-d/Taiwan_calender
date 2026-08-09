@@ -2,9 +2,8 @@ name: Weekly Calendar Sync
 
 on:
   schedule:
-    # 每週一凌晨 00:00 (UTC) 執行，相當於台灣時間週一 08:00
-    - cron: '0 0 * * 1'
-  workflow_dispatch: # 支援手動觸發執行
+    - cron: '0 0 * * 1' # 每週一 08:00 (UTC+8)
+  workflow_dispatch:
 
 jobs:
   build-and-commit:
@@ -33,10 +32,11 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add taiwan_holidays.ics
+          # 同時保存 CSV 與 ICS 檔案
+          git add 政府行政機關辦公日曆表.csv taiwan_holidays.ics
           if git diff --staged --quiet; then
-            echo "No changes in ICS file."
+            echo "No changes in CSV or ICS files."
           else
-            git commit -m "Auto update Taiwan Holiday ICS [skip ci]"
+            git commit -m "Auto update Raw CSV and Holiday ICS [skip ci]"
             git push
           fi
