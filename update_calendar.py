@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 CSV_URL = "https://data.ntpc.gov.tw/api/datasets/308dcd75-6434-45bc-a95f-584da4fed251/csv/file"
+RAW_CSV_NAME = "政府行政機關辦公日曆表.csv"
 OUTPUT_ICS = "taiwan_holidays.ics"
 
 def convert_csv_to_ics(csv_file_path, output_ics_path):
@@ -58,20 +59,18 @@ def convert_csv_to_ics(csv_file_path, output_ics_path):
         f.write("\n".join(ics_lines))
 
 def main():
-    print("Downloading CSV...")
+    print("Downloading raw CSV...")
     response = requests.get(CSV_URL)
     response.raise_for_status()
     
-    csv_file = "temp_holidays.csv"
-    with open(csv_file, "wb") as f:
+    # 保存原始 CSV
+    with open(RAW_CSV_NAME, "wb") as f:
         f.write(response.content)
         
     print("Converting to ICS...")
-    convert_csv_to_ics(csv_file, OUTPUT_ICS)
+    convert_csv_to_ics(RAW_CSV_NAME, OUTPUT_ICS)
     
-    if os.path.exists(csv_file):
-        os.remove(csv_file)
-    print("Calendar update completed!")
+    print("Saved raw CSV and generated ICS successfully!")
 
 if __name__ == "__main__":
     main()
