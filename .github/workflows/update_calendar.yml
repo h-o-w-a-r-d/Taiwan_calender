@@ -32,11 +32,11 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          # 同時保存 CSV 與 ICS 檔案
-          git add 政府行政機關辦公日曆表.csv taiwan_holidays.ics
+          # 包含原始 CSV、完整版 ICS、以及今年/明年版的 ICS
+          git add 政府行政機關辦公日曆表.csv taiwan_holidays_full.ics taiwan_holidays.ics
           if git diff --staged --quiet; then
             echo "No changes in CSV or ICS files."
           else
-            git commit -m "Auto update Raw CSV and Holiday ICS [skip ci]"
+            git commit -m "Auto update Raw CSV and ICS files [skip ci]"
             git push
           fi
