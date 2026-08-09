@@ -49,8 +49,9 @@ def generate_ics(df_filtered, output_ics_path, now_str):
         
     ics_lines.append("END:VCALENDAR")
     
-    with open(output_ics_path, 'w', encoding='utf-8') as f:
-        f.write("\n".join(ics_lines))
+    # 修正重點：使用 CRLF (\r\n) 換行以符合 RFC 5545 規範
+    with open(output_ics_path, 'w', encoding='utf-8', newline='\r\n') as f:
+        f.write("\r\n".join(ics_lines) + "\r\n")
 
 def convert_csv_to_ics(csv_file_path):
     df = pd.read_csv(csv_file_path)
@@ -80,10 +81,10 @@ def main():
     with open(RAW_CSV_NAME, "wb") as f:
         f.write(response.content)
         
-    print("Converting to ICS...")
+    print("Converting to ICS with CRLF line endings...")
     convert_csv_to_ics(RAW_CSV_NAME)
     
-    print("Successfully generated raw CSV, full ICS, and current/next year ICS!")
+    print("Successfully updated ICS files with standard CRLF format!")
 
 if __name__ == "__main__":
     main()
