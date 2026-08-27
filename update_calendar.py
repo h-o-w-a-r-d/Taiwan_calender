@@ -5,10 +5,16 @@ from datetime import datetime, date
 from icalendar import Calendar, Event
 import pytz
 
-CSV_URL = "https://data.ntpc.gov.tw/api/datasets/308dcd75-6434-45bc-a95f-584da4fed251/csv/file"
+CSV_URL = "https://ntpc.gov.tw"
 RAW_CSV_NAME = "政府行政機關辦公日曆表.csv"
+
+# 檔案路徑定義
 OUTPUT_ICS_FULL = "taiwan_holidays_full.ics"
 OUTPUT_ICS_CURRENT = "taiwan_holidays.ics"
+OUTPUT_EVENTS_FULL = "taiwan_events_full.ics"
+OUTPUT_EVENTS_CURRENT = "taiwan_events.ics"
+OUTPUT_CAL_FULL = "taiwan_calender_full.ics"
+OUTPUT_CAL_CURRENT = "taiwan_calender.ics"
 
 def generate_ics(df_filtered, output_ics_path):
     # 建立日曆物件並設定屬性
@@ -41,8 +47,6 @@ def generate_ics(df_filtered, output_ics_path):
         event.add('uid', uid)
         event.add('dtstamp', now)
         event.add('dtstart', start_date)
-        # 對於全天事件，iCalendar 規範沒有強制必須加上 dtend，
-        # 如果要加，通常是加隔天，但直接設定 dtstart 就足夠代表當天全天事件了。
         
         event.add('summary', summary)
         event.add('description', desc)
@@ -52,7 +56,7 @@ def generate_ics(df_filtered, output_ics_path):
         # 將事件加入日曆
         cal.add_component(event)
         
-    # 將日曆物件寫入檔案，icalendar 會自動處理 CRLF 與格式規範
+    # 將日曆物件寫入檔案
     with open(output_ics_path, 'wb') as f:
         f.write(cal.to_ical())
 
@@ -62,15 +66,26 @@ def convert_csv_to_ics(csv_file_path):
     # 剔除普通週末，僅保留國定假日、補假、調整放假與補班日
     df_filtered = df[df['holidaycategory'] != '星期六、星期日'].copy()
     
-    # 1. 產生完整版的 ICS
-    generate_ics(df_filtered, OUTPUT_ICS_FULL)
+    # 根據是否放假進行條件篩選
+    df_holidays = df_filtered[df_filtered['isholiday'].str.strip() == '是'].copy()
+    df_events = df_filtered[df_filtered['isholiday'].str.strip() != '是'].copy()
+    
+    # 1. 產生完整版的第一組（放假、沒放假、全部）
+    generate_ics(df_holidays, OUTPUT_ICS_FULL)
+    generate_ics(df_events, OUTPUT_EVENTS_FULL)
+    generate_ics(df_filtered, OUTPUT_CAL_FULL)
     
     # 2. 篩選「今年與明年」的資料並產生標準版 ICS
     current_year = datetime.now().year
     target_years = [current_year, current_year + 1]
     
-    df_current_next = df_filtered[df_filtered['year'].isin(target_years)].copy()
-    generate_ics(df_current_next, OUTPUT_ICS_CURRENT)
+    df_h_curr = df_holidays[df_holidays['year'].isin(target_years)].copy()
+    df_e_curr = df_events[df_events['year'].isin(target_years)].copy()
+    df_c_curr = df_filtered[df_filtered['year'].isin(target_years)].copy()
+    
+    generate_ics(df_h_curr, OUTPUT_ICS_CURRENT)
+    generate_ics(df_e_curr, OUTPUT_EVENTS_CURRENT)
+    generate_ics(df_c_curr, OUTPUT_CAL_CURRENT)
 
 def main():
     print("Downloading raw CSV...")
