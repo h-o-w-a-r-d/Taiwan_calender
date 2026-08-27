@@ -5,7 +5,7 @@ from datetime import datetime, date
 from icalendar import Calendar, Event
 import pytz
 
-CSV_URL = "https://ntpc.gov.tw"
+CSV_URL = "https://data.ntpc.gov.tw/api/datasets/308dcd75-6434-45bc-a95f-584da4fed251/csv/file"
 RAW_CSV_NAME = "政府行政機關辦公日曆表.csv"
 
 # 檔案路徑定義
