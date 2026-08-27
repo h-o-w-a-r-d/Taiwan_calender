@@ -1,0 +1,8 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Taiwan Executive Yuan//Government Holiday Calendar//ZH
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:中華民國政府行政機關辦公日曆表
+X-WR-TIMEZONE:Asia/Taipei
+END:VCALENDAR
