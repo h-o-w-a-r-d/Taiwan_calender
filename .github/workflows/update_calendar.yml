@@ -1,8 +1,8 @@
-name: Weekly Calendar Sync
+name: Daily Calendar Sync
 
 on:
   schedule:
-    - cron: '0 0 * * 1' # 每週一 08:00 (UTC+8)
+    - cron: '0 0 * * *' # 每日 08:00 (UTC+8)
   workflow_dispatch:
 
 jobs:
@@ -31,9 +31,9 @@ jobs:
       - name: Commit and push if changed
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          # 包含原始 CSV、完整版 ICS、以及今年/明年版的 ICS
-          git add 政府行政機關辦公日曆表.csv taiwan_holidays_full.ics taiwan_holidays.ics
+          git config --global user.email "github-actions[bot]@://github.com"
+          # 包含原始 CSV 以及所有新產生的 ICS 檔案
+          git add 政府行政機關辦公日曆表.csv taiwan_holidays_full.ics taiwan_holidays.ics taiwan_events_full.ics taiwan_events.ics taiwan_calender_full.ics taiwan_calender.ics
           if git diff --staged --quiet; then
             echo "No changes in CSV or ICS files."
           else
